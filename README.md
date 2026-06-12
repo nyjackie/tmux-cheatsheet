@@ -2,6 +2,8 @@
 
 A tmux plugin that adds a clickable **⌨ Keys** button to your status bar. Click it (or press `prefix + C-h`) and a popup appears with a scrollable, color-coded shortcut cheatsheet.
 
+![Demo: opening the menu, running a split from it, and browsing the cheatsheet popup](demo.gif)
+
 ## Requirements
 
 - tmux **3.2+** (for `display-popup` and clickable status ranges; older versions fall back to opening a window)
