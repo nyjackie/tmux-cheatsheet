@@ -22,7 +22,7 @@ POPUP="$CURRENT_DIR/show_cheatsheet.sh"
 # ---- Catppuccin Mocha — tmux #[...] style markup ---------------------------
 CHIP="#[fg=#a6e3a1,bold]"              # green keycap, no chip background
 DESC="#[fg=#cdd6f4]"                    # description text
-REF="#[fg=#fab387]"                     # prefix-key reference, peach
+REF="#[fg=#fab387]"                     # (unused) prefix-key reference, peach
 DIM="#[fg=#7f849c]"                     # back / close, overlay1
 ACCENT="#[fg=#cba6f7,bold]"             # mauve accent
 BLUE="#[fg=#89b4fa,bold]"               # subtle blue (full cheatsheet)
@@ -36,11 +36,14 @@ MENU=(tmux display-menu -x C -y C -b rounded
 
 # chip <key> <description>            -> label: keycap chip + description
 chip() { printf '%s %s %s %s%s%s' "$CHIP" "$1" "$RST" "$DESC" "$2" "$RST"; }
-# cmd  <key> <description> <prefix>   -> label: chip + description + prefix ref
-# NOTE: the label must NOT end on a #[...] style tag — this tmux build appends a
-# stray ">" truncation marker when it does. So we reset the style BEFORE the
-# trailing "prefix X" text and end on a plain space.
-cmd()  { printf '%s %s %s %s%-19s%sprefix %s ' "$CHIP" "$1" "$RST" "$DESC" "$2" "$RST" "$3"; }
+# cmd  <description> <prefix>         -> label: description + prefix ref
+# The pressable key is rendered by tmux itself as "(key)" on the right (it's the
+# menu mnemonic, passed as the field right after this label). We deliberately do
+# NOT draw our own keycap on the left, which would just duplicate that "(key)".
+# The label must also not END on a #[...] style tag, or this tmux build appends a
+# stray ">" marker — so we reset the style before the trailing "prefix X" text
+# and end on a plain space.
+cmd()  { printf '%s%-20s%sprefix %s ' "$DESC" "$1" "$RST" "$2"; }
 
 menu_main() {
   "${MENU[@]}" -T "#[fg=#cba6f7,bold] ⌨ tmux shortcuts " \
@@ -55,49 +58,49 @@ menu_main() {
 
 menu_panes() {
   "${MENU[@]}" -T "#[fg=#cba6f7,bold] Panes — click to run " \
-    "$(cmd v 'Split left | right' '%')"     "" "split-window -h" \
-    "$(cmd h 'Split top - bottom' '\"')"    "" "split-window -v" \
-    "$(cmd z 'Zoom pane'          'z')"     "" "resize-pane -Z" \
-    "$(cmd o 'Next pane'          'o')"     "" "select-pane -t :.+" \
-    "$(cmd s 'Swap pane down'     '}')"     "" "swap-pane -D" \
-    "$(cmd l 'Cycle layouts'      'Space')" "" "next-layout" \
-    "$(cmd b 'Break into window'  '!')"     "" "break-pane" \
-    "$(cmd x 'Kill pane'          'x')"     "" "confirm-before -p 'kill this pane? (y/n)' kill-pane" \
+    "$(cmd 'Split left | right' '%')"     v "split-window -h" \
+    "$(cmd 'Split top - bottom' '\"')"    h "split-window -v" \
+    "$(cmd 'Zoom pane'          'z')"     z "resize-pane -Z" \
+    "$(cmd 'Next pane'          'o')"     o "select-pane -t :.+" \
+    "$(cmd 'Swap pane down'     '}')"     s "swap-pane -D" \
+    "$(cmd 'Cycle layouts'      'Space')" l "next-layout" \
+    "$(cmd 'Break into window'  '!')"     b "break-pane" \
+    "$(cmd 'Kill pane'          'x')"     x "confirm-before -p 'kill this pane? (y/n)' kill-pane" \
     "" \
     "${DIM}◀ Back${RST}" Left "run-shell '$SELF'"
 }
 
 menu_windows() {
   "${MENU[@]}" -T "#[fg=#cba6f7,bold] Windows — click to run " \
-    "$(cmd c 'New window'      'c')" "" "new-window" \
-    "$(cmd r 'Rename window'   ',')" "" "command-prompt -I '#W' 'rename-window %%'" \
-    "$(cmd n 'Next window'     'n')" "" "next-window" \
-    "$(cmd p 'Previous window' 'p')" "" "previous-window" \
-    "$(cmd w 'Window picker'   'w')" "" "choose-tree -Zw" \
-    "$(cmd x 'Kill window'     '&')" "" "confirm-before -p 'kill this window? (y/n)' kill-window" \
+    "$(cmd 'New window'      'c')" c "new-window" \
+    "$(cmd 'Rename window'   ',')" r "command-prompt -I '#W' 'rename-window %%'" \
+    "$(cmd 'Next window'     'n')" n "next-window" \
+    "$(cmd 'Previous window' 'p')" p "previous-window" \
+    "$(cmd 'Window picker'   'w')" w "choose-tree -Zw" \
+    "$(cmd 'Kill window'     '&')" x "confirm-before -p 'kill this window? (y/n)' kill-window" \
     "" \
     "${DIM}◀ Back${RST}" Left "run-shell '$SELF'"
 }
 
 menu_sessions() {
   "${MENU[@]}" -T "#[fg=#cba6f7,bold] Sessions — click to run " \
-    "$(cmd s 'Session picker'   's')"  "" "choose-tree -Zs" \
-    "$(cmd r 'Rename session'   '\$')" "" "command-prompt 'rename-session %%'" \
-    "$(cmd n 'Next session'     ')')"  "" "switch-client -n" \
-    "$(cmd p 'Previous session' '(')"  "" "switch-client -p" \
-    "$(cmd d 'Detach'           'd')"  "" "detach-client" \
+    "$(cmd 'Session picker'   's')"  s "choose-tree -Zs" \
+    "$(cmd 'Rename session'   '\$')" r "command-prompt 'rename-session %%'" \
+    "$(cmd 'Next session'     ')')"  n "switch-client -n" \
+    "$(cmd 'Previous session' '(')"  p "switch-client -p" \
+    "$(cmd 'Detach'           'd')"  d "detach-client" \
     "" \
     "${DIM}◀ Back${RST}" Left "run-shell '$SELF'"
 }
 
 menu_misc() {
   "${MENU[@]}" -T "#[fg=#cba6f7,bold] Copy mode & misc — click to run " \
-    "$(cmd c 'Enter copy mode' '[')" "" "copy-mode" \
-    "$(cmd p 'Paste buffer'    ']')" "" "paste-buffer" \
-    "$(cmd b 'Buffer picker'   '=')" "" "choose-buffer -Z" \
-    "$(cmd : 'Command prompt'  ':')" "" "command-prompt" \
-    "$(cmd t 'Big clock'       't')" "" "clock-mode" \
-    "$(cmd l 'All keybindings' '?')" "" "list-keys" \
+    "$(cmd 'Enter copy mode' '[')" c "copy-mode" \
+    "$(cmd 'Paste buffer'    ']')" p "paste-buffer" \
+    "$(cmd 'Buffer picker'   '=')" b "choose-buffer -Z" \
+    "$(cmd 'Command prompt'  ':')" : "command-prompt" \
+    "$(cmd 'Big clock'       't')" t "clock-mode" \
+    "$(cmd 'All keybindings' '?')" k "list-keys" \
     "" \
     "${DIM}◀ Back${RST}" Left "run-shell '$SELF'"
 }
