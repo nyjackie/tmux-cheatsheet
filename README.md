@@ -2,7 +2,7 @@
 
 A tmux plugin that adds a clickable **⌨ Keys** button to your status bar. Click it (or press `prefix + C-h`) and a popup appears with a scrollable, color-coded shortcut cheatsheet.
 
-![Demo: opening the menu, running a split from it, and browsing the cheatsheet popup](demo.gif)
+![Demo: opening the menu, running a split from it, and browsing the cheatsheet popup](https://raw.githubusercontent.com/nyjackie/tmux-cheatsheet/main/demo.gif)
 
 ## Requirements
 
@@ -17,14 +17,13 @@ set -g mouse on
 
 ### With TPM (recommended)
 
-1. Put this folder in `~/.tmux/plugins/tmux-cheatsheet` (or push it to GitHub and reference it as `yourname/tmux-cheatsheet`).
-2. Add to `~/.tmux.conf`:
+1. Add to `~/.tmux.conf`:
 
 ```tmux
-set -g @plugin 'yourname/tmux-cheatsheet'
+set -g @plugin 'nyjackie/tmux-cheatsheet'
 ```
 
-3. Press `prefix + I` to install.
+2. Press `prefix + I` to install.
 
 ### Manual
 
