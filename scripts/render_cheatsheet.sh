@@ -13,12 +13,17 @@ get_option() {
   echo "${value:-$2}"
 }
 
-# ---- Colors ----------------------------------------------------------------
-B=$'\e[1m'      # bold
-D=$'\e[2m'      # dim
-C=$'\e[36m'     # cyan  (keys)
-Y=$'\e[33m'     # yellow (section titles)
-R=$'\e[0m'      # reset
+# ---- Colors — Catppuccin Mocha (24-bit truecolor) --------------------------
+B=$'\e[1m'                          # bold
+R=$'\e[0m'                          # reset
+MAUVE=$'\e[38;2;203;166;247m'       # header / keyword
+BLUE=$'\e[38;2;137;180;250m'        # section titles / function
+GREEN=$'\e[38;2;166;227;161m'       # keys / string
+PEACH=$'\e[38;2;250;179;135m'       # prefix value / constant
+TEXT=$'\e[38;2;205;214;244m'        # descriptions
+SUB=$'\e[38;2;127;132;156m'         # tips / comments (overlay1)
+SURF=$'\e[48;2;49;50;68m'           # keycap background (surface0)
+KEYCHIP="${B}${GREEN}${SURF}"       # highlighted key token
 
 # Show the user's actual prefix in the header (e.g. C-b or C-a)
 PREFIX="$(tmux show-option -gv prefix)"
@@ -34,12 +39,20 @@ if [[ -n "$CUSTOM_FILE" ]]; then
 fi
 
 # ---- Helpers ----------------------------------------------------------------
-section() { printf "\n  %s%s%s\n" "${B}${Y}" "$1" "$R"; }
-row()     { printf "    %s%-22s%s %s\n" "$C" "$1" "$R" "$2"; }
+section() { printf "\n  ${B}${BLUE}%s${R}\n" "$1"; }
+
+# A key gets a "keycap" chip (Surface0 bg); descriptions align to a fixed
+# column so they line up no matter how wide the key token is.
+row() {
+  local k="$1" d="$2" pad
+  pad=$(( 22 - ${#k} ))
+  (( pad < 1 )) && pad=1
+  printf "    ${KEYCHIP} %s ${R}%*s${TEXT}%s${R}\n" "$k" "$pad" "" "$d"
+}
 
 # ---- Default cheatsheet ------------------------------------------------------
-printf "\n  %sTMUX CHEATSHEET%s   %sprefix = %s — press it before every key below%s\n" \
-  "$B" "$R" "$D" "$PREFIX" "$R"
+printf "\n  ${B}${MAUVE}TMUX CHEATSHEET${R}   ${SUB}prefix = ${R}${B}${PEACH}%s${R}${SUB} — press it before every key below${R}\n" \
+  "$PREFIX"
 
 section "Sessions"
 row "d"           "detach from session"
@@ -81,7 +94,7 @@ row ":"           "command prompt"
 row "?"           "list ALL keybindings"
 row "r"           "reload config (if bound)"
 
-printf "\n  %sTip: set -g @cheatsheet_file to use your own custom list.%s\n" "$D" "$R"
+printf "\n  ${SUB}Tip: set -g @cheatsheet_file to use your own custom list.${R}\n"
 
 # ---- Live bindings (optional) ------------------------------------------------
 if [[ "$(get_option "@cheatsheet_show_live" "off")" == "on" ]]; then
