@@ -15,6 +15,12 @@ set -g mouse on
 
 ## Installation
 
+### With AI (easiest)
+Ask Claude
+```
+Install this tmux plugin https://github.com/nyjackie/tmux-cheatsheet
+```
+
 ### With TPM (recommended)
 
 1. Add to `~/.tmux.conf`:
